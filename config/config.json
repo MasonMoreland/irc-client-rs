@@ -1,0 +1,24 @@
+{
+	"owners": [],
+	"nickname": "user",
+	"nick_password": "password",
+	"alt_nicks": ["user_", "user__"],
+	"username": "user",
+	"realname": "Test User",
+	"server": "irc.mozilla.org",
+	"port": 6697,
+	"password": "",
+	"use_ssl": true,
+	"encoding": "UTF-8",
+	"channels": ["#rust", "#haskell"],
+	"umodes": "+RB-x",
+	"user_info": "I'm a test user for the Rust IRC crate.",
+	"ping_time": 180,
+	"ping_timeout": 10,
+	"options": {
+		"key": "value",
+		"note": "anything you want can be in here!",
+		"and": "you can use it to build your own additional configuration options."
+	}
+}
+
