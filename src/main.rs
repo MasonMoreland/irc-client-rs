@@ -2,32 +2,33 @@ extern crate irc;
 
 use std::env;
 use std::io;
-use std::io::Write;
 use std::thread::spawn;
 use irc::client::prelude::*;
 
-fn usage(argv0: &str) {
-    let mut stderr = std::io::stderr();
-    writeln!(&mut stderr, "Usage: {} server nick channel", argv0).unwrap();
-}
-fn main() {
+fn get_irc_server() -> IrcServer {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 4 {
-        usage(&args[0]);
-        return;
+        // TODO: fix relative pathing to the config
+        IrcServer::new("../config/config.json").unwrap()
+    }
+    else {
+        let (server, nick, channel) = (args[1].clone(), args[2].clone(), args[3].clone());
+
+        let irc_server_config = Config {
+            server: Some(server),
+            nickname: Some(nick),
+            channels: Some(vec![channel.clone()]),
+            .. Default::default()
+        };
+
+        IrcServer::from_config(irc_server_config).unwrap()
     }
 
-    let (server, nick, channel) = (args[1].clone(), args[2].clone(), args[3].clone());
+}
 
-    let irc_server_config = Config {
-        server: Some(server),
-        nickname: Some(nick),
-        channels: Some(vec![channel.clone()]),
-        .. Default::default()
-    };
-
-    let irc_server = IrcServer::from_config(irc_server_config).unwrap();
+fn main() {
+    let irc_server = get_irc_server();
     irc_server.identify().unwrap();
 
     let irc_server_wr = irc_server.clone();
@@ -35,9 +36,10 @@ fn main() {
     let _ = spawn(move || {
         let mut input_line = String::new();
 
-        io::stdin().read_line(&mut input_line);
+        io::stdin().read_line(&mut input_line).unwrap();
 
-        irc_server_wr.send_privmsg(&channel, &input_line).unwrap();
+        irc_server_wr.config().channels().iter().map(
+            |chan| irc_server_wr.send_privmsg(chan, &input_line).unwrap()).count();
     });
 
     for message in irc_server.iter() {
