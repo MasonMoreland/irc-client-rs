@@ -1,6 +1,5 @@
 extern crate irc;
 
-// use std::env;
 use irc::client::prelude::*;
 use std::path::Path;
 
@@ -12,7 +11,10 @@ fn main() {
 
     let irc_config = Config::load(&config_path).unwrap();
 
+    // Initialize the connection to the IRC server
     let irc_server = IrcServer::from_config(irc_config).unwrap();
+
+    // Send the server metadata from irq_config
     irc_server.identify().unwrap();
 
     loop {
