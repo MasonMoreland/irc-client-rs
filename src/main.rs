@@ -34,12 +34,14 @@ fn main() {
     let irc_server_wr = irc_server.clone();
 
     let _ = spawn(move || {
-        let mut input_line = String::new();
+        loop {
+            let mut input_line = String::new();
 
-        io::stdin().read_line(&mut input_line).unwrap();
+            io::stdin().read_line(&mut input_line).unwrap();
 
-        irc_server_wr.config().channels().iter().map(
-            |chan| irc_server_wr.send_privmsg(chan, &input_line).unwrap()).count();
+            irc_server_wr.config().channels().iter().map(
+                |chan| irc_server_wr.send_privmsg(chan, &input_line).unwrap()).count();
+        }
     });
 
     for message in irc_server.iter() {
